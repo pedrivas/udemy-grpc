@@ -11,7 +11,7 @@ public class BankService extends BankServiceGrpc.BankServiceImplBase {
     public void getBalance(BalanceCheckRequest request, StreamObserver<Balance> responseObserver) {
 
         int accountNumber = request.getAccountNumber();
-        Balance balance = Balance.newBuilder().setAmount(accountNumber * 10)
+        Balance balance = Balance.newBuilder().setAmount(AccountDatabase.getBalance(accountNumber))
                 .build();
 
         responseObserver.onNext(balance);
