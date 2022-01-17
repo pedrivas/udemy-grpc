@@ -24,17 +24,23 @@ public class BankService extends BankServiceGrpc.BankServiceImplBase {
         int amount = request.getAmount();
         int balance = AccountDatabase.getBalance(accountNumber);
 
-        if(balance < amount){
+        if (balance < amount) {
             Status status = Status.FAILED_PRECONDITION.withDescription("Not enough money. Your balance is " + balance);
             responseObserver.onError(status.asRuntimeException());
             return;
         }
 
-        for (int i = 0; i < (amount/10); i++) {
+        for (int i = 0; i < (amount / 10); i++) {
             Money money = Money.newBuilder().setValue(10).build();
             responseObserver.onNext(money);
             AccountDatabase.deductBalance(accountNumber, 10);
         }
         responseObserver.onCompleted();
+    }
+
+    @Override
+    public StreamObserver<DepositRequest> cashDeposit(StreamObserver<Balance> responseObserver) {
+
+        return new CashStreamingRequest(responseObserver);
     }
 }
